@@ -1,0 +1,23 @@
+version: '3.4'
+services:
+  changedetection:
+    image: ghcr.io/dgtlmoon/changedetection.io
+    container_name: changedetection
+    volumes:
+      - ./data:/datastore
+    restart: unless-stopped
+    environment:
+      # Respect proxy_pass type settings, `proxy_set_header Host "localhost";` and `proxy_set_header X-Forwarded-Prefix /app;`
+      - USE_X_SETTINGS=1
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.changedetection.rule=PathPrefix(`/changedetection{regex:$$|/.*}`)'
+      - 'traefik.http.middlewares.changedetection-strip.stripprefix.prefixes=/changedetection'
+      - 'traefik.http.routers.changedetection.middlewares=changedetection-strip'
+      - 'traefik.http.services.changedetection.loadbalancer.server.port=5000'
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true

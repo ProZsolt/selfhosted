@@ -1,0 +1,18 @@
+version: '3.4'
+services:
+  homeassistant:
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    container_name: homeassistant
+    volumes:
+      - ./data:/config
+    restart: unless-stopped
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.homeassistant.rule=Host(`homeassistant.docker.local`)'
+      - 'traefik.http.services.homeassistant.loadbalancer.server.port=8123'
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true

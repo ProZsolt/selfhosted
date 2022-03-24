@@ -1,0 +1,16 @@
+version: '3.4'
+services:
+  coredns: 
+    image: coredns/coredns
+    container_name: 'coredns'
+    restart: 'unless-stopped'
+    command: -conf coredns-config/Corefile
+    ports:
+      - 53:53/udp
+    volumes:
+      - ./config:/coredns-config/
+    networks: 
+      - proxy 
+networks:
+  proxy:
+    external: true
